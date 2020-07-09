@@ -94,6 +94,13 @@ public class DBConnector {
 				parent.addKnightOrOrder(new JediOrder(name));
 			}
 			
+		}else if(table.equals("knights_orders")){
+			result = statement.executeQuery("SELECT * FROM knights_orders");
+			while(result.next()) {
+				/*
+				 * dokoñczyæ kasowanie ryce¿y z joKnightsViw
+				 */
+			}
 		}else
 			return;
 			
@@ -102,9 +109,9 @@ public class DBConnector {
 	public void insertInto(Object object) {
 		String sql = null;
 		if(object instanceof JediKnight) {
-			sql = "INSERT INTO jedi_knights VALUES "+((JediKnight) object).toSQLvalues();		
+			sql = "INSERT INTO jedi_knights(Name, Side, Saber, Power) VALUES "+((JediKnight) object).toSQLvalues();		
 		}else if(object instanceof JediOrder) {
-			sql = "INSERT INTO jedi_orders VALUES "+((JediOrder) object).toSQLvalues();
+			sql = "INSERT INTO jedi_orders(Name) VALUES "+((JediOrder) object).toSQLvalues();
 		}else
 			return;
 		System.out.println(sql);

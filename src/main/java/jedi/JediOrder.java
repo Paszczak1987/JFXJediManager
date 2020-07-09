@@ -35,7 +35,7 @@ public class JediOrder {
 	}
 	
 	public String toSQLvalues() {
-		return String.format("(%d,'%s');", id, name);
+		return String.format("('%s');", name);
 	}
 	
 	@Override

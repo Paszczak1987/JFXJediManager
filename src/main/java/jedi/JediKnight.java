@@ -41,7 +41,7 @@ public class JediKnight {
 	}
 	
 	public String toSQLvalues() {
-		return String.format("(%d,'%s', '%s', '%s', %d);", id, name, side, saber, power);
+		return String.format("('%s', '%s', '%s', %d);", name, side, saber, power);
 	}
 
 	@Override
