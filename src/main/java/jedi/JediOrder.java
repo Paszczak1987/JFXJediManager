@@ -6,20 +6,12 @@ import java.util.List;
 public class JediOrder {
 	
 	public static List<JediOrder> orders;
-	private static int counter;
-	
+
 	static {
 		orders = new ArrayList<JediOrder>();
-		counter = 0;
 	}
 	
-	private int id;
 	private String name;
-	
-	{
-		this.id = counter;
-		counter++;
-	}
 	
 	public JediOrder(String name) {
 		this.name = name;
@@ -28,10 +20,6 @@ public class JediOrder {
 	
 	public String getName() {
 		return name;
-	}
-	
-	public int getId() {
-		return id;
 	}
 	
 	public String toSQLvalues() {

@@ -11,12 +11,12 @@ public class DBConnector {
 	private MainWindowController parent;
 	private Connection connection;
 	private Statement statement;
-	private final String JediKnights;
-	private final String JediOrders;
-	private final String knightsOrders;
+	private final String jediKnightsSQL;
+	private final String jediOrdersSQL;
+	private final String knightsOrdersSQL;
 	
 	{//instancyjny blok inicjalizacyjny
-		JediKnights = "CREATE TABLE JEDI_KNIGHTS ("
+		jediKnightsSQL = "CREATE TABLE JEDI_KNIGHTS ("
 								+"ID_Knight serial,"
 								+"Name varchar(30),"
 								+"Side varchar(6),"
@@ -25,13 +25,13 @@ public class DBConnector {
 								+"PRIMARY KEY (ID_Knight)"
 								+");";
 		
-		JediOrders = "CREATE TABLE JEDI_ORDERS ("
+		jediOrdersSQL = "CREATE TABLE JEDI_ORDERS ("
 								+"ID_Order serial,"
 								+"Name varchar(30),"
 								+"PRIMARY KEY(ID_Order)"
 								+");";
 		
-		knightsOrders = "CREATE TABLE KNIGHTS_ORDERS ("
+		knightsOrdersSQL = "CREATE TABLE KNIGHTS_ORDERS ("
 								+"ID_Knight_Order serial,"
 								+"Knight_ID int,"
 								+"Order_ID int,"
@@ -59,16 +59,16 @@ public class DBConnector {
 		ResultSet result = metaData.getTables(null, null, table, null);	
 		if(!result.next()) {
 			if(table.equals("jedi_knights"))
-				statement.executeUpdate(JediKnights);
+				statement.executeUpdate(jediKnightsSQL);
 			else if(table.equals("jedi_orders"))
-				statement.executeUpdate(JediOrders);
+				statement.executeUpdate(jediOrdersSQL);
 			else if(table.equals("knights_orders"))
-				statement.executeUpdate(knightsOrders);
+				statement.executeUpdate(knightsOrdersSQL);
 			else
 				return;
-			System.out.println(table+" UTWORZONO");
+			//System.out.println(table+" UTWORZONO");
 		}else {
-			System.out.println(table+" ISTNIEJE");
+			//System.out.println(table+" ISTNIEJE");
 			getData(table, result);
 		}
 		
@@ -81,29 +81,39 @@ public class DBConnector {
 				String name = result.getString("Name");
 				String side = result.getString("Side");
 				String saber = result.getString("Saber");
-				int power = result.getInt("Power");
-				System.out.printf("%s %s %s %d\n", name, side, saber, power);
+				int    power = result.getInt("Power");
 				parent.addKnightOrOrder(new JediKnight(name, side, saber, power));
-			}
-				
+			}				
 		}else if(table.equals("jedi_orders")) {
 			result = statement.executeQuery("SELECT * FROM jedi_orders");
 			while(result.next()) {
 				String name = result.getString("Name");
-				System.out.printf("%s\n", name);
 				parent.addKnightOrOrder(new JediOrder(name));
 			}
-			
 		}else if(table.equals("knights_orders")){
-			result = statement.executeQuery("SELECT * FROM knights_orders");
+			result = statement.executeQuery("SELECT * FROM knights_orders");			
 			while(result.next()) {
-				/*
-				 * dokoñczyæ kasowanie ryce¿y z joKnightsViw
-				 */
+				int knightId = result.getInt("Knight_ID") - 1;
+				int orderId = result.getInt("Order_ID") - 1;
+				for(int i = 0; i < JediKnight.knights.size(); i++) {
+					if(knightId == i) {
+						String knightName = JediKnight.knights.get(i).getName();
+						parent.getJoKnights().remove(knightName);						
+					}
+				}
+				for(int i = 0; i < JediOrder.orders.size(); i++) {
+					if(orderId == i) {
+						String order = parent.getJoOrders().get(i);
+						if (!order.contains(" [ "))
+							order = order + " [ ";
+						order = order.replace(" ]", "; ");
+						order = order + JediKnight.knights.get(knightId).getName() + " ]";
+						parent.getJoOrders().set(i, order);
+					}	
+				}
 			}
 		}else
 			return;
-			
 	}
 	
 	public void insertInto(Object object) {
@@ -114,7 +124,7 @@ public class DBConnector {
 			sql = "INSERT INTO jedi_orders(Name) VALUES "+((JediOrder) object).toSQLvalues();
 		}else
 			return;
-		System.out.println(sql);
+		//System.out.println(sql);
 		try {
 			statement.executeUpdate(sql);
 		} catch (SQLException e) {
@@ -135,8 +145,7 @@ public class DBConnector {
 			if(result.getString("Name").equals(order))
 				orderId = result.getInt("ID_Order");
 		}
-		String sql = "INSERT INTO knights_orders(Knight_ID, Order_ID) VALUES ("+knightId+", "+orderId+");";
-		statement.executeUpdate(sql); 
+		statement.executeUpdate("INSERT INTO knights_orders(Knight_ID, Order_ID) VALUES ("+knightId+", "+orderId+");"); 
 	}
 	
 }

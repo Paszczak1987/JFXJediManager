@@ -128,12 +128,12 @@
                            </padding>
                         </Slider>
                         <Label text="Strona Mocy:" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-                        <RadioButton fx:id="rbLight" mnemonicParsing="false" text="Jasna" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+                        <RadioButton fx:id="rbLight" mnemonicParsing="false" text="jasna" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets left="35.0" />
                            </GridPane.margin>
                         </RadioButton>
-                        <RadioButton fx:id="rbDark" mnemonicParsing="false" text="Ciemna" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+                        <RadioButton fx:id="rbDark" mnemonicParsing="false" text="ciemna" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets right="35.0" />
                            </GridPane.margin>

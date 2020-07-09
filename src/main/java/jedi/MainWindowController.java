@@ -84,19 +84,18 @@ public class MainWindowController {
 		dbConnector.createTable("jedi_orders");
 		dbConnector.createTable("knights_orders");
     	
-    	jkSaber.getItems().add("Niebieski");
-    	jkSaber.getItems().add("Zielony");
-    	jkSaber.getItems().add("¯ó³ty");
-    	jkSaber.getItems().add("Fioletowy");
-    	jkSaber.getItems().add("Czerwony");
-    	jkSaber.getItems().add("Pomarañczowy");
-    	jkSaber.getItems().add("Ró¿owy");
-    	jkSaber.setValue("Niebieski");
+    	jkSaber.getItems().add("niebieski");
+    	jkSaber.getItems().add("zielony");
+    	jkSaber.getItems().add("¿ó³ty");
+    	jkSaber.getItems().add("fioletowy");
+    	jkSaber.getItems().add("czerwony");
+    	jkSaber.getItems().add("pomarañczowy");
+    	jkSaber.getItems().add("ró¿owy");
+    	jkSaber.getItems().add("bia³y");
     
     	forceSide = new ToggleGroup();   	
     	rbLight.setToggleGroup(forceSide);
     	rbDark.setToggleGroup(forceSide);
-    	rbLight.setSelected(true);
     	
     }
     
@@ -141,7 +140,7 @@ public class MainWindowController {
 
 		if (!order.contains(" [ "))
 			order = order + " [ ";
-		order = order.replace(" ]", ", ");
+		order = order.replace(" ]", "; ");
 		order = order + knight + " ]";
 		joOrders.set(indexOfOrder, order);
 	}
@@ -152,6 +151,14 @@ public class MainWindowController {
     		joKnights.add(((JediKnight)knightOrOrder).getName());
     	}else if(knightOrOrder instanceof JediOrder)
     		joOrders.add(knightOrOrder.toString());
+    }
+    
+    public ObservableList<String> getJoOrders(){
+    	return joOrders;
+    }
+    
+    public ObservableList<String> getJoKnights(){
+    	return joKnights;
     }
 
 }
