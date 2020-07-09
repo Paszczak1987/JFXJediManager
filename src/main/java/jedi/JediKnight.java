@@ -24,10 +24,10 @@ public class JediKnight {
 		counter++;
 	}
 	
-	public JediKnight(String name, String side, String lightSaber, int power) {
+	public JediKnight(String name, String side, String saber, int power) {
 		this.name = name;
 		this.side = side;
-		this.saber = lightSaber;
+		this.saber = saber;
 		this.power = power;
 		knights.add(this);
 	}
@@ -48,6 +48,5 @@ public class JediKnight {
 	public String toString() {
 		return String.format("%s %s %s %d", name, side, saber, power);
 	}
-	
 	
 }

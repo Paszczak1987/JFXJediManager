@@ -12,6 +12,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 
 public class MainWindowController {
@@ -26,28 +27,28 @@ public class MainWindowController {
     private ListView<String> 		joKnightsView;
     private ObservableList<String> 	joKnights;
     @FXML
-    private TextField 				jediOrderName;
+    private TextField 				joName;
     @FXML
-    private Button 					jediOrderImportBtn;
+    private Button 					joChooseBtn;
     @FXML
-    private Button 					jediOrderExportBtn;
+    private Button 					joImportBtn;
     @FXML
-    private TextField 				jediOrdersFilePath;
+    private Button 					joExportBtn;
     @FXML
-    private Button 					jediOrderResetBtn;
+    private TextField 				joFilePath;
     @FXML
-    private Button 					jediOrderRegisterBtn;
+    private Button 					joResetBtn;
     @FXML
-    private Button 					jediOrderChooseBtn;
+    private Button 					joRegisterBtn;
     
     //JediKnight
     @FXML
     private ListView<String> 		jkKnightsView;
     private ObservableList<String> 	jkKnights;
     @FXML
-    private TextField 				jediKnightName;
+    private TextField 				jkName;
     @FXML
-    private ChoiceBox<String> 		jediKnightLightSaber;
+    private ChoiceBox<String> 		jkSaber;
     @FXML	
     private Button 					jediKnightImportBtn;
     @FXML
@@ -57,7 +58,7 @@ public class MainWindowController {
     @FXML
     private Button 					jediKnightResetBtn;
     @FXML
-    private Button 					jediKnightRegisterBtn;
+    private Button 					jkRegisterBtn;
     @FXML
     private Slider 					jediKnightPower;
     @FXML
@@ -70,23 +71,28 @@ public class MainWindowController {
     @FXML
     public void initialize() throws SQLException {
     	
-    	dbConnector = new DBConnector("5433", "JediKnights");
-		dbConnector.createTableJediKnights();
-    	
-    	jediKnightLightSaber.getItems().add("Niebieski");
-    	jediKnightLightSaber.getItems().add("Zielony");
-    	jediKnightLightSaber.getItems().add("¯ó³ty");
-    	jediKnightLightSaber.getItems().add("Fioletowy");
-    	jediKnightLightSaber.getItems().add("Czerwony");
-    	jediKnightLightSaber.getItems().add("Pomarañczowy");
-    	jediKnightLightSaber.getItems().add("Ró¿owy");
-    	jediKnightLightSaber.setValue("Niebieski");
-    	
     	jkKnights = FXCollections.observableArrayList();
-    	joKnights = FXCollections.observableArrayList();
     	jkKnightsView.setItems(jkKnights);
-    	joKnightsView.setItems(joKnights);
     	
+    	joKnights = FXCollections.observableArrayList();
+    	joOrders = FXCollections.observableArrayList();
+    	joKnightsView.setItems(joKnights);
+    	joOrdersView.setItems(joOrders);
+
+    	dbConnector = new DBConnector(this, "5433", "JediKnights");
+		dbConnector.createTable("jedi_knights");
+		dbConnector.createTable("jedi_orders");
+		dbConnector.createTable("knights_orders");
+    	
+    	jkSaber.getItems().add("Niebieski");
+    	jkSaber.getItems().add("Zielony");
+    	jkSaber.getItems().add("¯ó³ty");
+    	jkSaber.getItems().add("Fioletowy");
+    	jkSaber.getItems().add("Czerwony");
+    	jkSaber.getItems().add("Pomarañczowy");
+    	jkSaber.getItems().add("Ró¿owy");
+    	jkSaber.setValue("Niebieski");
+    
     	forceSide = new ToggleGroup();   	
     	rbLight.setToggleGroup(forceSide);
     	rbDark.setToggleGroup(forceSide);
@@ -97,17 +103,55 @@ public class MainWindowController {
     @FXML
     void jkRegBtnOnAction(ActionEvent event) {
     	
-    	String name = jediKnightName.getText();
+    	String name = jkName.getText();
     	String side = ((RadioButton)forceSide.getSelectedToggle()).getText();
-    	String saber = jediKnightLightSaber.getValue();
+    	String saber = jkSaber.getValue();
     	int    power = (int) jediKnightPower.getValue();
     	
     	JediKnight jedi = new JediKnight(name, side, saber, power);
+    	addKnightOrOrder(jedi);  	
+    	dbConnector.insertInto(jedi);
+    }
+    
+    @FXML
+    void joRegBtnOnAction(ActionEvent event) {
     	
-    	jkKnights.add(jedi.toString());
-    	joKnights.add(jedi.toString());
+    	String name = joName.getText();
     	
-    	dbConnector.pushJedi(jedi);
+    	JediOrder order = new JediOrder(name);
+    	addKnightOrOrder(order);
+    	dbConnector.insertInto(order);
+    }
+    
+    @FXML
+	void joChooseBtnOnAction(ActionEvent event) {
+
+		String knight = joKnightsView.getSelectionModel().getSelectedItem();
+		int indexOfKnight = joKnightsView.getSelectionModel().getSelectedIndex();
+		joKnights.remove(indexOfKnight);
+		
+		String order = joOrdersView.getSelectionModel().getSelectedItem();
+		int indexOfOrder = joOrdersView.getSelectionModel().getSelectedIndex();
+
+		try {
+			dbConnector.insertInto(order.split(" ")[0], knight);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		if (!order.contains(" [ "))
+			order = order + " [ ";
+		order = order.replace(" ]", ", ");
+		order = order + knight + " ]";
+		joOrders.set(indexOfOrder, order);
+	}
+    
+    public void addKnightOrOrder(Object knightOrOrder) {
+    	if(knightOrOrder instanceof JediKnight) {
+    		jkKnights.add(knightOrOrder.toString());
+    		joKnights.add(((JediKnight)knightOrOrder).getName());
+    	}else if(knightOrOrder instanceof JediOrder)
+    		joOrders.add(knightOrOrder.toString());
     }
 
 }
