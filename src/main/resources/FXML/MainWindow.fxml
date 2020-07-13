@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane prefHeight="600.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jedi.MainWindowController">
+<StackPane fx:id="stackPane" prefHeight="600.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jedi.MainWindowController">
    <children>
       <HBox id="mainContainer" alignment="CENTER">
          <children>
@@ -55,7 +55,7 @@
                               <Button fx:id="joExportBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Export" />
                            </children>
                         </VBox>
-                        <TextField fx:id="joFilePath" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                        <TextField fx:id="joFilePath" editable="false" alignment="TOP_CENTER" onMouseClicked="#joFilePathOnMClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                         <Button fx:id="joResetBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Wyczyść" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets right="25.0" />
