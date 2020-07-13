@@ -1,23 +1,33 @@
 package jedi;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 
 public class MainWindowController {
 
 	private DBConnector 			dbConnector;
+    private Dialog<String[]> 		dialog;
     
 	//JediOrder
     @FXML
@@ -54,7 +64,7 @@ public class MainWindowController {
     @FXML
     private Button 					jediKnightExportBtn;
     @FXML
-    private TextField 				jediKnightsFilePath;
+    private TextField 				jkFilePath;
     @FXML
     private Button 					jediKnightResetBtn;
     @FXML
@@ -69,7 +79,7 @@ public class MainWindowController {
 	
 	
     @FXML
-    public void initialize() throws SQLException {
+    public void initialize() {
     	
     	jkKnights = FXCollections.observableArrayList();
     	jkKnightsView.setItems(jkKnights);
@@ -78,11 +88,6 @@ public class MainWindowController {
     	joOrders = FXCollections.observableArrayList();
     	joKnightsView.setItems(joKnights);
     	joOrdersView.setItems(joOrders);
-
-    	dbConnector = new DBConnector(this, "5433", "JediKnights");
-		dbConnector.createTable("jedi_knights");
-		dbConnector.createTable("jedi_orders");
-		dbConnector.createTable("knights_orders");
     	
     	jkSaber.getItems().add("niebieski");
     	jkSaber.getItems().add("zielony");
@@ -92,11 +97,73 @@ public class MainWindowController {
     	jkSaber.getItems().add("pomarañczowy");
     	jkSaber.getItems().add("ró¿owy");
     	jkSaber.getItems().add("bia³y");
-    
+    	
+    	jkFilePath.setFocusTraversable(true);
+    	
     	forceSide = new ToggleGroup();   	
     	rbLight.setToggleGroup(forceSide);
     	rbDark.setToggleGroup(forceSide);
+    	dialog = new Dialog<>();
     	
+//    	setDialog();
+//    	Optional<String[]> result = dialog.showAndWait();
+//    	result.ifPresent(connVals -> {
+//			try {
+//				establishConnection(connVals);
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		});
+//    		
+//    	if(result.isEmpty()) {
+//    		Platform.exit();
+//    	}
+    	
+    	try {
+			establishConnection(new String[] {"5433","JediKnights","Delfin8765"});
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    private void setDialog() {
+		ButtonType connectBtn = new ButtonType("Po³¹cz", ButtonData.OK_DONE);
+		dialog.setTitle("Po³¹czenie z baz¹ danych");
+		dialog.setHeaderText("Wype³nij rekordy wymagane do po³¹czenia z baz¹ danych:\n nazwê, numer portu oraz has³o.");
+		dialog.getDialogPane().getButtonTypes().addAll(connectBtn, ButtonType.CANCEL);
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20,150,10,10));
+		TextField dbName = new TextField();
+		TextField portNum = new TextField();
+		PasswordField password = new PasswordField();
+		dbName.setPromptText("nazwa");
+		portNum.setPromptText("5432");
+		grid.add(new Label("Baza danych:"), 0, 0);
+		grid.add(dbName, 1, 0);
+		grid.add(new Label("Numer portu:"), 0, 1);
+		grid.add(portNum, 1, 1);
+		grid.add(new Label("Has³o:"), 0, 2);
+		grid.add(password, 1, 2);
+		
+		dialog.getDialogPane().setContent(grid);
+		
+		dialog.setResultConverter(dialogButton ->{
+			if(dialogButton == connectBtn) {
+				String[] ret = { portNum.getText(), dbName.getText(), password.getText() };
+				return ret;
+			}
+			return null;
+		});
+	}
+    
+    public void establishConnection(String[] connVals) throws SQLException {
+    	dbConnector = new DBConnector(this, connVals[0], connVals[1] , connVals[2]);
+		dbConnector.createTable("jedi_knights");
+		dbConnector.createTable("jedi_orders");
+		dbConnector.createTable("knights_orders");
     }
     
     @FXML
@@ -110,6 +177,11 @@ public class MainWindowController {
     	JediKnight jedi = new JediKnight(name, side, saber, power);
     	addKnightOrOrder(jedi);  	
     	dbConnector.insertInto(jedi);
+    }
+    
+    @FXML
+    void jkFilePathOnMClicked(MouseEvent event) {
+    	System.out.println("ok");
     }
     
     @FXML
@@ -160,5 +232,5 @@ public class MainWindowController {
     public ObservableList<String> getJoKnights(){
     	return joKnights;
     }
-
+    
 }

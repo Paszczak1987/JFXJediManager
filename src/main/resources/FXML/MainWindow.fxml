@@ -18,17 +18,17 @@
 
 <StackPane prefHeight="600.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jedi.MainWindowController">
    <children>
-      <HBox alignment="CENTER">
+      <HBox id="mainContainer" alignment="CENTER">
          <children>
             <VBox alignment="CENTER" prefHeight="600.0" prefWidth="400.0">
                <children>
-                  <Label alignment="CENTER" prefHeight="35.0" text="Zakony Jedi" />
+                  <Label id="ordersLabel" alignment="CENTER" prefHeight="35.0" text="Zakony Jedi" />
                   <ListView fx:id="joOrdersView" prefHeight="200.0">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </ListView>
-                  <Label prefHeight="35.0" text="Rejestracja Zakonu Jedi">
+                  <Label id="ordersRegLabel" prefHeight="35.0" text="Rejestracja Zakonu Jedi">
                      <VBox.margin>
                         <Insets top="5.0" />
                      </VBox.margin>
@@ -75,14 +75,14 @@
             </VBox>
             <Separator orientation="VERTICAL" prefHeight="200.0">
                <padding>
-                  <Insets left="2.0" />
+                  <Insets left="4.0" />
                </padding>
             </Separator>
             <VBox alignment="CENTER" prefHeight="600.0" prefWidth="400.0">
                <children>
-                  <Label prefHeight="35.0" text="Rycerze Jedi" />
+                  <Label id="knightsLabel" prefHeight="35.0" text="Rycerze Jedi" />
                   <ListView fx:id="jkKnightsView" prefHeight="200.0" />
-                  <Label prefHeight="35.0" text="Rejestracja rycerza Jedi">
+                  <Label id="knightsRegLabel" prefHeight="35.0" text="Rejestracja rycerza Jedi">
                      <VBox.margin>
                         <Insets top="5.0" />
                      </VBox.margin></Label>
@@ -108,7 +108,7 @@
                               <Button fx:id="jediKnightExportBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Export" />
                            </children>
                         </VBox>
-                        <TextField fx:id="jediKnightsFilePath" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+                        <TextField fx:id="jkFilePath" alignment="TOP_CENTER" editable="false" onMouseClicked="#jkFilePathOnMClicked" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
                         <Button fx:id="jediKnightResetBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Wyczyść" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
                            <GridPane.margin>
                               <Insets right="25.0" />
@@ -142,7 +142,7 @@
                   </GridPane>
                </children>
                <padding>
-                  <Insets left="5.0" right="5.0" />
+                  <Insets left="6.0" />
                </padding>
             </VBox>
          </children>

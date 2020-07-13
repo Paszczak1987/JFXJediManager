@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javafx.application.Platform;
+
 public class DBConnector {
 	private MainWindowController parent;
 	private Connection connection;
@@ -41,12 +43,12 @@ public class DBConnector {
 								+");";
 	}
 	
-	public DBConnector(MainWindowController parent, String localhostNr, String dbName) {
+	public DBConnector(MainWindowController parent, String localhostNr, String dbName, String password) {
 		this.parent = parent;
 		String url = "jdbc:postgresql://localhost:" + localhostNr + "/" + dbName;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(url, "postgres", "Delfin8765");
+			connection = DriverManager.getConnection(url, "postgres", password);
 			statement = connection.createStatement();
 
 		} catch (Exception e) {
@@ -66,9 +68,7 @@ public class DBConnector {
 				statement.executeUpdate(knightsOrdersSQL);
 			else
 				return;
-			//System.out.println(table+" UTWORZONO");
 		}else {
-			//System.out.println(table+" ISTNIEJE");
 			getData(table, result);
 		}
 		

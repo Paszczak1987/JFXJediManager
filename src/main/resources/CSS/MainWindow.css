@@ -1,0 +1,15 @@
+#mainContainer{
+	-fx-background-color: linear-gradient(to bottom, lightblue, tomato);
+}
+
+#ordersLabel, #knightsLabel{
+	-fx-font-style: italic;
+	-fx-font-weight: bold;
+	-fx-font-size: 18px;
+}
+
+#ordersRegLabel, #knightsRegLabel{
+	-fx-font-style: italic;
+	-fx-font-weight: bold;
+	-fx-font-size: 14px;
+}

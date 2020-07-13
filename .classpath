@@ -37,5 +37,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX"/>
 	<classpathentry kind="lib" path="E:/eclipse-workspace/JFXJedi/src/main/resources/postgresql-42.2.14.jar"/>
+	<classpathentry kind="lib" path="src/main/resources/org.eclipse.fx.ide.css.jfx8_3.5.0.201907240300.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
