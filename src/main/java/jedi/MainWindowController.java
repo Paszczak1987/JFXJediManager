@@ -277,37 +277,37 @@ public class MainWindowController {
 		dbConnector.createTable("knights_orders");
     }
     
-    private void setInputDialog() {
-		ButtonType connectBtn = new ButtonType("Po³¹cz", ButtonData.OK_DONE);
-		inputDialog.setTitle("Po³¹czenie z baz¹ danych");
-		inputDialog.setHeaderText("Wype³nij rekordy wymagane do po³¹czenia z baz¹ danych:\n nazwê, numer portu oraz has³o.");
-		inputDialog.getDialogPane().getButtonTypes().addAll(connectBtn, ButtonType.CANCEL);
-		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(20,150,10,10));
-		TextField dbName = new TextField();
-		TextField portNum = new TextField();
-		PasswordField password = new PasswordField();
-		dbName.setPromptText("nazwa");
-		portNum.setPromptText("5432");
-		grid.add(new Label("Baza danych:"), 0, 0);
-		grid.add(dbName, 1, 0);
-		grid.add(new Label("Numer portu:"), 0, 1);
-		grid.add(portNum, 1, 1);
-		grid.add(new Label("Has³o:"), 0, 2);
-		grid.add(password, 1, 2);
-		
-		inputDialog.getDialogPane().setContent(grid);
-		
-		inputDialog.setResultConverter(dialogButton ->{
-			if(dialogButton == connectBtn) {
-				String[] ret = { portNum.getText(), dbName.getText(), password.getText() };
-				return ret;
-			}
-			return null;
-		});
-	}
+//    private void setInputDialog() {
+//		ButtonType connectBtn = new ButtonType("Po³¹cz", ButtonData.OK_DONE);
+//		inputDialog.setTitle("Po³¹czenie z baz¹ danych");
+//		inputDialog.setHeaderText("Wype³nij rekordy wymagane do po³¹czenia z baz¹ danych:\n nazwê, numer portu oraz has³o.");
+//		inputDialog.getDialogPane().getButtonTypes().addAll(connectBtn, ButtonType.CANCEL);
+//		GridPane grid = new GridPane();
+//		grid.setHgap(10);
+//		grid.setVgap(10);
+//		grid.setPadding(new Insets(20,150,10,10));
+//		TextField dbName = new TextField();
+//		TextField portNum = new TextField();
+//		PasswordField password = new PasswordField();
+//		dbName.setPromptText("nazwa");
+//		portNum.setPromptText("5432");
+//		grid.add(new Label("Baza danych:"), 0, 0);
+//		grid.add(dbName, 1, 0);
+//		grid.add(new Label("Numer portu:"), 0, 1);
+//		grid.add(portNum, 1, 1);
+//		grid.add(new Label("Has³o:"), 0, 2);
+//		grid.add(password, 1, 2);
+//		
+//		inputDialog.getDialogPane().setContent(grid);
+//		
+//		inputDialog.setResultConverter(dialogButton ->{
+//			if(dialogButton == connectBtn) {
+//				String[] ret = { portNum.getText(), dbName.getText(), password.getText() };
+//				return ret;
+//			}
+//			return null;
+//		});
+//	}
     
     private void pickFile(MouseEvent event) {
     	FileChooser fileChooser = new FileChooser();
