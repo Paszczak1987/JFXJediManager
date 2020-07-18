@@ -68,13 +68,13 @@ public class MainWindowController {
     @FXML
     private ChoiceBox<String> 		jkSaber;
     @FXML	
-    private Button 					jediKnightImportBtn;
+    private Button 					jkImportBtn;
     @FXML
-    private Button 					jediKnightExportBtn;
+    private Button 					jkExportBtn;
     @FXML
     private TextField 				jkFilePath;
     @FXML
-    private Button 					jediKnightResetBtn;
+    private Button 					jkResetBtn;
     @FXML
     private Button 					jkRegisterBtn;
     @FXML
@@ -133,15 +133,44 @@ public class MainWindowController {
 		}
     }
     
+    //JK
+    
     @FXML
     void jkRegBtnOnAction(ActionEvent event) {
     	String name = jkName.getText();
-    	String side = ((RadioButton)forceSide.getSelectedToggle()).getText();
+    	String side = null;
+    	if(forceSide.getSelectedToggle() != null)
+    		side = ((RadioButton)forceSide.getSelectedToggle()).getText();
     	String saber = jkSaber.getValue();
-    	int    power = (int) jediKnightPower.getValue();   	
-    	JediKnight jedi = new JediKnight(name, side, saber, power);
-    	addKnightOrOrder(jedi);  	
-    	dbConnector.insertInto(jedi);
+    	int    power = (int) jediKnightPower.getValue(); 
+    	if((!name.equals("") && side != null) && saber != null) {
+    		boolean whetherThereIs = false;
+    		for(JediKnight jk: JediKnight.knights) {
+    			if(jk.getName().equals(name))
+    				whetherThereIs = true;
+    		}
+    	
+    		if(!whetherThereIs) {
+    			JediKnight jedi = new JediKnight(name, side, saber, power);
+    			addKnightOrOrder(jedi);  	
+    			dbConnector.insertInto(jedi);    		
+    		}else
+    			System.out.println("Jedi o takim imieniu ju¿ istnieje");
+    	
+    	
+    		//reset values
+    		jkSaber.setValue(null);
+    		jkName.setText("");
+    		forceSide.getSelectedToggle().setSelected(false);
+    		jediKnightPower.setValue(500);
+    	}
+    }
+    
+    @FXML
+    void jkResetBtnOnClick(MouseEvent event) {
+    	jkKnights.clear();
+    	JediKnight.knights.clear();
+    	jkFilePath.setText("");
     }
     
     @FXML
@@ -150,34 +179,72 @@ public class MainWindowController {
     }
     
     @FXML
+    void jkExpBtnOnClick(MouseEvent event) {
+    	if(jkExpFile != null) {
+    		FileCodder.encodeToFile(jkExpFile.getAbsolutePath(), jkKnights);
+    	}else
+    		System.out.println("wybierz pliku do exportu");
+    }
+    
+    @FXML
+    void jkImportBtnOnClick(MouseEvent event) throws SQLException {
+    	if(dbConnector.isTableExist("jedi_knights"))
+    		dbConnector.getData("jedi_knights");
+    }
+   
+    //JO
+    
+    @FXML
     void joRegBtnOnAction(ActionEvent event) {
     	String name = joName.getText();
-    	JediOrder order = new JediOrder(name);
-    	addKnightOrOrder(order);
-    	dbConnector.insertInto(order);
+    	if(!name.equals("")) {
+    		boolean whetherThereIs = false;
+    		for(JediOrder jo: JediOrder.orders) {
+    			if(jo.getName().equals(name))
+    				whetherThereIs = true;
+    		}
+    	
+    		if(!whetherThereIs && !name.equals(null)) {
+    			JediOrder order = new JediOrder(name);
+    			addKnightOrOrder(order);
+    			dbConnector.insertInto(order);    		
+    		}
+    	
+    		//reset values
+    		joName.setText("");
+    	}
+    }
+  
+    @FXML
+    void joResetBtnOnClick(MouseEvent event) {
+    	joOrders.clear();
+    	JediOrder.orders.clear();
+    	joKnights.clear();
+    	joFilePath.setText("");
     }
     
     @FXML
 	void joChooseBtnOnAction(ActionEvent event) {
-
-		String knight = joKnightsView.getSelectionModel().getSelectedItem();
-		int indexOfKnight = joKnightsView.getSelectionModel().getSelectedIndex();
-		joKnights.remove(indexOfKnight);
-		
-		String order = joOrdersView.getSelectionModel().getSelectedItem();
-		int indexOfOrder = joOrdersView.getSelectionModel().getSelectedIndex();
-
-		try {
-			dbConnector.insertInto(order.split(" ")[0], knight);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		if (!order.contains(" [ "))
-			order = order + " [ ";
-		order = order.replace(" ]", "; ");
-		order = order + knight + " ]";
-		joOrders.set(indexOfOrder, order);
+    	if(joKnightsView.getSelectionModel().getSelectedItem() != null && joKnightsView.getSelectionModel().getSelectedItem() != null) {
+    		String knight = joKnightsView.getSelectionModel().getSelectedItem();
+    		int indexOfKnight = joKnightsView.getSelectionModel().getSelectedIndex();
+    		joKnights.remove(indexOfKnight);
+    		
+    		String order = joOrdersView.getSelectionModel().getSelectedItem();
+    		int indexOfOrder = joOrdersView.getSelectionModel().getSelectedIndex();
+    		
+    		try {
+    			dbConnector.insertInto(order.split(" ")[0], knight);
+    		} catch (SQLException e) {
+    			e.printStackTrace();
+    		}
+    		
+    		if (!order.contains(" [ "))
+    			order = order + " [ ";
+    		order = order.replace(" ]", "; ");
+    		order = order + knight + " ]";
+    		joOrders.set(indexOfOrder, order);
+    	}
 	}
     
     @FXML
@@ -185,17 +252,27 @@ public class MainWindowController {
     	pickFile(event);
     }
     
-    public void addKnightOrOrder(Object knightOrOrder) {
-    	if(knightOrOrder instanceof JediKnight) {
-    		jkKnights.add(knightOrOrder.toString());
-    		joKnights.add(((JediKnight)knightOrOrder).getName());
-    	}else if(knightOrOrder instanceof JediOrder)
-    		joOrders.add(knightOrOrder.toString());
+    @FXML
+    void joExpBtnOnClick(MouseEvent event) {
+    	if(joExpFile != null) {
+    		FileCodder.encodeToFile(joExpFile.getAbsolutePath(), joOrders);
+    	}else
+    		System.out.println("wybierz pliku do exportu");
     }
+    
+    @FXML
+    void joImportBtnOnClick(MouseEvent event) throws SQLException {
+    	if(dbConnector.isTableExist("jedi_orders"))
+    		dbConnector.getData("jedi_orders");
+    	if(!jkKnights.isEmpty())
+    		dbConnector.getData("knights_orders");
+    }
+    
+    //PRIVATE
     
     private void establishConnection(String[] connVals) throws SQLException {
     	dbConnector = new DBConnector(this, connVals[0], connVals[1] , connVals[2]);
-		dbConnector.createTable("jedi_knights");
+    	dbConnector.createTable("jedi_knights");
 		dbConnector.createTable("jedi_orders");
 		dbConnector.createTable("knights_orders");
     }
@@ -253,6 +330,18 @@ public class MainWindowController {
         	}else
         		jkFilePath.setText(jkExpFile.getAbsolutePath());
     	}
+    }
+    
+    //PUBLIC
+    
+    public void addKnightOrOrder(Object knightOrOrder) {
+    	if(knightOrOrder instanceof JediKnight) {
+    		jkKnights.add(knightOrOrder.toString());
+    		if(!((JediKnight)knightOrOrder).isAssigned())
+    			if(!joKnights.contains(((JediKnight)knightOrOrder).getName()))
+    				joKnights.add(((JediKnight)knightOrOrder).getName());
+    	}else if(knightOrOrder instanceof JediOrder)
+    		joOrders.add(knightOrOrder.toString());
     }
     
     public ObservableList<String> getJoOrders(){

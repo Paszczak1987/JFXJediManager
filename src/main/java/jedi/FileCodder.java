@@ -54,7 +54,7 @@ public class FileCodder {
 		return decodedLine.toString();
 	}
 	
-	public static void encodeToFile(String url, String[] messages) {
+	public static void encodeToFile(String url, List<String> messages) {
 		makeKey();
 		PrintWriter fileWriter = null;
 		try {

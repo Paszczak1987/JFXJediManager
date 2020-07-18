@@ -51,12 +51,12 @@
                         <ListView fx:id="joKnightsView" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
                            <children>
-                              <Button fx:id="joImportBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Import" />
-                              <Button fx:id="joExportBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Export" />
+                              <Button fx:id="joImportBtn" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#joImportBtnOnClick" prefWidth="75.0" text="Import" />
+                              <Button fx:id="joExportBtn" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#joExpBtnOnClick" prefWidth="75.0" text="Export" />
                            </children>
                         </VBox>
-                        <TextField fx:id="joFilePath" editable="false" alignment="TOP_CENTER" onMouseClicked="#joFilePathOnMClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                        <Button fx:id="joResetBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Wyczyść" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+                        <TextField fx:id="joFilePath" alignment="TOP_CENTER" editable="false" onMouseClicked="#joFilePathOnMClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                        <Button fx:id="joResetBtn" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#joResetBtnOnClick" prefWidth="75.0" text="Wyczyść" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
                            <GridPane.margin>
                               <Insets right="25.0" />
                            </GridPane.margin>
@@ -104,12 +104,12 @@
                         <TextField fx:id="jkName" alignment="CENTER" GridPane.columnIndex="1" />
                         <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4">
                            <children>
-                              <Button fx:id="jediKnightImportBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Import" />
-                              <Button fx:id="jediKnightExportBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Export" />
+                              <Button fx:id="jkImportBtn" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#jkImportBtnOnClick" prefWidth="75.0" text="Import" />
+                              <Button fx:id="jkExportBtn" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#jkExpBtnOnClick" prefWidth="75.0" text="Export" />
                            </children>
                         </VBox>
                         <TextField fx:id="jkFilePath" alignment="TOP_CENTER" editable="false" onMouseClicked="#jkFilePathOnMClicked" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
-                        <Button fx:id="jediKnightResetBtn" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Wyczyść" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
+                        <Button fx:id="jkResetBtn" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#jkResetBtnOnClick" prefWidth="75.0" text="Wyczyść" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
                            <GridPane.margin>
                               <Insets right="25.0" />
                            </GridPane.margin>

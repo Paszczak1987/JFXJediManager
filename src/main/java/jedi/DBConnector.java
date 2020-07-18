@@ -13,9 +13,11 @@ public class DBConnector {
 	private MainWindowController parent;
 	private Connection connection;
 	private Statement statement;
+	private Statement statement02;
 	private final String jediKnightsSQL;
 	private final String jediOrdersSQL;
 	private final String knightsOrdersSQL;
+	private boolean isDBEmpty;
 	
 	{//instancyjny blok inicjalizacyjny
 		jediKnightsSQL = "CREATE TABLE JEDI_KNIGHTS ("
@@ -50,6 +52,7 @@ public class DBConnector {
 			Class.forName("org.postgresql.Driver");
 			connection = DriverManager.getConnection(url, "postgres", password);
 			statement = connection.createStatement();
+			statement02 = connection.createStatement();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -59,7 +62,9 @@ public class DBConnector {
 	public void createTable(String table) throws SQLException {
 		DatabaseMetaData metaData = connection.getMetaData();
 		ResultSet result = metaData.getTables(null, null, table, null);	
-		if(!result.next()) {
+		if(!result.next()) {	//Jeœli baza jest pusta i tabele nie istniej¹
+			if(!isDBEmpty)
+				isDBEmpty = true;
 			if(table.equals("jedi_knights"))
 				statement.executeUpdate(jediKnightsSQL);
 			else if(table.equals("jedi_orders"))
@@ -68,52 +73,86 @@ public class DBConnector {
 				statement.executeUpdate(knightsOrdersSQL);
 			else
 				return;
-		}else {
-			getData(table, result);
+		}else { 
+			/*
+			getData(table);
+			*/
 		}
 		
 	}
 	
-	private void getData(String table, ResultSet result) throws SQLException {
+	public void getData(String table) throws SQLException {
+		DatabaseMetaData metaData = connection.getMetaData();
+		ResultSet result = metaData.getTables(null, null, table, null);	
 		if(table.equals("jedi_knights")) {
 			result = statement.executeQuery("SELECT * FROM jedi_knights");
 			while(result.next()) {
+				int id = result.getInt("id_knight");
 				String name = result.getString("Name");
 				String side = result.getString("Side");
 				String saber = result.getString("Saber");
 				int    power = result.getInt("Power");
-				parent.addKnightOrOrder(new JediKnight(name, side, saber, power));
+				//blokada ¿eby nie powieliæ rycerzy przy imporcie
+				boolean whetherThereIs = false;
+				for(JediKnight jk: JediKnight.knights) {
+					if(jk.getName().equals(name))
+						whetherThereIs = true;
+				}
+				//sprawdzamy czy rycerz jest przypisany do jakiegoœ zakonu
+				boolean isAssigned = false;
+				ResultSet res = statement02.executeQuery("SELECT * FROM knights_orders");
+				while(res.next()) {
+					if(id == res.getInt("knight_id"))
+						isAssigned = true;
+				}
+				// w zale¿noœci od tego czy jest przypisany czy nie 
+				if(!whetherThereIs) {
+					if(isAssigned) {
+						JediKnight jk = new JediKnight(name, side, saber, power);
+						jk.setAssign(isAssigned);
+						parent.addKnightOrOrder(jk);
+					}else if(!isAssigned) {
+						parent.addKnightOrOrder(new JediKnight(name, side, saber, power));
+					}
+				}
 			}				
 		}else if(table.equals("jedi_orders")) {
 			result = statement.executeQuery("SELECT * FROM jedi_orders");
 			while(result.next()) {
 				String name = result.getString("Name");
-				parent.addKnightOrOrder(new JediOrder(name));
+				boolean whetherThereIs = false;
+				for(JediOrder jo: JediOrder.orders) {
+					if(jo.getName().equals(name))
+						whetherThereIs = true;
+				}
+				if(!whetherThereIs)
+					parent.addKnightOrOrder(new JediOrder(name));
 			}
 		}else if(table.equals("knights_orders")){
 			result = statement.executeQuery("SELECT * FROM knights_orders");			
 			while(result.next()) {
-				int knightId = result.getInt("Knight_ID") - 1;
-				int orderId = result.getInt("Order_ID") - 1;
-				for(int i = 0; i < JediKnight.knights.size(); i++) {
-					if(knightId == i) {
-						String knightName = JediKnight.knights.get(i).getName();
+				int jkIdFromDB = result.getInt("Knight_ID") - 1;
+				int joIdFromDB = result.getInt("Order_ID") - 1;
+				for(int jkId = 0; jkId < JediKnight.knights.size(); jkId++) {
+					if(jkIdFromDB == jkId) {
+						String knightName = JediKnight.knights.get(jkId).getName();
 						parent.getJoKnights().remove(knightName);						
 					}
 				}
-				for(int i = 0; i < JediOrder.orders.size(); i++) {
-					if(orderId == i) {
-						String order = parent.getJoOrders().get(i);
-						if (!order.contains(" [ "))
-							order = order + " [ ";
-						order = order.replace(" ]", "; ");
-						order = order + JediKnight.knights.get(knightId).getName() + " ]";
-						parent.getJoOrders().set(i, order);
+				for(int joId = 0; joId < JediOrder.orders.size(); joId++) {
+					if(joIdFromDB == joId) {
+						String order = parent.getJoOrders().get(joId);
+						if(!order.contains(JediKnight.knights.get(jkIdFromDB).getName())) {
+							if (!order.contains(" [ "))
+								order = order + " [ ";
+							order = order.replace(" ]", "; ");
+							order = order + JediKnight.knights.get(jkIdFromDB).getName() + " ]";
+							parent.getJoOrders().set(joId, order);
+						}
 					}	
 				}
 			}
-		}else
-			return;
+		}
 	}
 	
 	public void insertInto(Object object) {
@@ -124,12 +163,15 @@ public class DBConnector {
 			sql = "INSERT INTO jedi_orders(Name) VALUES "+((JediOrder) object).toSQLvalues();
 		}else
 			return;
-		//System.out.println(sql);
+		
 		try {
 			statement.executeUpdate(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		if(isDBEmpty)
+			isDBEmpty = false;
 	}
 	
 	public void insertInto(String order, String knight) throws SQLException {
@@ -147,5 +189,19 @@ public class DBConnector {
 		}
 		statement.executeUpdate("INSERT INTO knights_orders(Knight_ID, Order_ID) VALUES ("+knightId+", "+orderId+");"); 
 	}
+	
+	public boolean isTableExist(String table) throws SQLException {
+		ResultSet result = statement.executeQuery("SELECT * FROM "+table);
+		if(result.next())
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean isDBEmpty() {
+		return isDBEmpty;
+	}
+	
+	
 	
 }
