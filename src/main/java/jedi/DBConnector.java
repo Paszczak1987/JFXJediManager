@@ -53,9 +53,9 @@ public class DBConnector {
 			connection = DriverManager.getConnection(url, "postgres", password);
 			statement = connection.createStatement();
 			statement02 = connection.createStatement();
-
 		} catch (Exception e) {
-			e.printStackTrace();
+			parent.setConnectionFail();
+			System.out.println("Nie uda³o siê po³¹czyæ z baz¹ danych.");
 		}
 	}
 	
@@ -73,12 +73,7 @@ public class DBConnector {
 				statement.executeUpdate(knightsOrdersSQL);
 			else
 				return;
-		}else { 
-			/*
-			getData(table);
-			*/
-		}
-		
+		}	
 	}
 	
 	public void getData(String table) throws SQLException {

@@ -32,6 +32,7 @@ import javafx.scene.control.ButtonType;
 public class MainWindowController {
 
 	private DBConnector 			dbConnector;
+	private boolean					connectionFail;
     private Dialog<String[]> 		inputDialog;
     
     @FXML
@@ -112,25 +113,27 @@ public class MainWindowController {
     	rbDark.setToggleGroup(forceSide);
     	inputDialog = new Dialog<>();
     	
-//    	setInputDialog();
-//    	Optional<String[]> result = inputDialog.showAndWait();
-//    	result.ifPresent(connVals -> {
-//			try {
-//				establishConnection(connVals);
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		});
-//    		
-//    	if(result.isEmpty()) {
-//    		Platform.exit();
-//    	}
+    	this.connectionFail = false;
     	
-    	try {
-			establishConnection(new String[] {"5433","JediKnights","Delfin8765"});
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+    	setInputDialog();
+    	Optional<String[]> result = inputDialog.showAndWait();
+    	result.ifPresent(connVals -> {
+			try {
+				establishConnection(connVals);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		});
+    		
+    	if(result.isEmpty()) {
+    		Platform.exit();
+    	}
+    	
+//    	try {
+//			establishConnection(new String[] {"5433","JediKnights","Delfin8765"});
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
     }
     
     //JK
@@ -226,6 +229,7 @@ public class MainWindowController {
     @FXML
 	void joChooseBtnOnAction(ActionEvent event) {
     	if(joKnightsView.getSelectionModel().getSelectedItem() != null && joKnightsView.getSelectionModel().getSelectedItem() != null) {
+    		
     		String knight = joKnightsView.getSelectionModel().getSelectedItem();
     		int indexOfKnight = joKnightsView.getSelectionModel().getSelectedIndex();
     		joKnights.remove(indexOfKnight);
@@ -272,42 +276,45 @@ public class MainWindowController {
     
     private void establishConnection(String[] connVals) throws SQLException {
     	dbConnector = new DBConnector(this, connVals[0], connVals[1] , connVals[2]);
-    	dbConnector.createTable("jedi_knights");
-		dbConnector.createTable("jedi_orders");
-		dbConnector.createTable("knights_orders");
+    	if(!connectionFail) {
+    		dbConnector.createTable("jedi_knights");
+    		dbConnector.createTable("jedi_orders");
+    		dbConnector.createTable("knights_orders");    		
+    	}else
+    		Platform.exit();
     }
     
-//    private void setInputDialog() {
-//		ButtonType connectBtn = new ButtonType("Po³¹cz", ButtonData.OK_DONE);
-//		inputDialog.setTitle("Po³¹czenie z baz¹ danych");
-//		inputDialog.setHeaderText("Wype³nij rekordy wymagane do po³¹czenia z baz¹ danych:\n nazwê, numer portu oraz has³o.");
-//		inputDialog.getDialogPane().getButtonTypes().addAll(connectBtn, ButtonType.CANCEL);
-//		GridPane grid = new GridPane();
-//		grid.setHgap(10);
-//		grid.setVgap(10);
-//		grid.setPadding(new Insets(20,150,10,10));
-//		TextField dbName = new TextField();
-//		TextField portNum = new TextField();
-//		PasswordField password = new PasswordField();
-//		dbName.setPromptText("nazwa");
-//		portNum.setPromptText("5432");
-//		grid.add(new Label("Baza danych:"), 0, 0);
-//		grid.add(dbName, 1, 0);
-//		grid.add(new Label("Numer portu:"), 0, 1);
-//		grid.add(portNum, 1, 1);
-//		grid.add(new Label("Has³o:"), 0, 2);
-//		grid.add(password, 1, 2);
-//		
-//		inputDialog.getDialogPane().setContent(grid);
-//		
-//		inputDialog.setResultConverter(dialogButton ->{
-//			if(dialogButton == connectBtn) {
-//				String[] ret = { portNum.getText(), dbName.getText(), password.getText() };
-//				return ret;
-//			}
-//			return null;
-//		});
-//	}
+    private void setInputDialog() {
+		ButtonType connectBtn = new ButtonType("Po³¹cz", ButtonData.OK_DONE);
+		inputDialog.setTitle("Po³¹czenie z baz¹ danych");
+		inputDialog.setHeaderText("Wype³nij rekordy wymagane do po³¹czenia z baz¹ danych:\n nazwê, numer portu oraz has³o.");
+		inputDialog.getDialogPane().getButtonTypes().addAll(connectBtn, ButtonType.CANCEL);
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20,150,10,10));
+		TextField dbName = new TextField();
+		TextField portNum = new TextField();
+		PasswordField password = new PasswordField();
+		dbName.setPromptText("nazwa");
+		portNum.setPromptText("5432");
+		grid.add(new Label("Baza danych:"), 0, 0);
+		grid.add(dbName, 1, 0);
+		grid.add(new Label("Numer portu:"), 0, 1);
+		grid.add(portNum, 1, 1);
+		grid.add(new Label("Has³o:"), 0, 2);
+		grid.add(password, 1, 2);
+		
+		inputDialog.getDialogPane().setContent(grid);
+		
+		inputDialog.setResultConverter(dialogButton ->{
+			if(dialogButton == connectBtn) {
+				String[] ret = { portNum.getText(), dbName.getText(), password.getText() };
+				return ret;
+			}
+			return null;
+		});
+	}
     
     private void pickFile(MouseEvent event) {
     	FileChooser fileChooser = new FileChooser();
@@ -350,6 +357,10 @@ public class MainWindowController {
     
     public ObservableList<String> getJoKnights(){
     	return joKnights;
+    }
+    
+    public void setConnectionFail() {
+    	this.connectionFail = true;
     }
     
 }
